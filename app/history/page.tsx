@@ -1,82 +1,102 @@
-"use client"
+"use client";
 
-import type React from "react"
+import type React from "react";
 
-import { useState } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { format, subDays } from "date-fns"
-import { Button } from "@/components/ui/button"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { HistoryTable } from "@/components/history-table"
-import { HistoryChart } from "@/components/history-chart"
-import { Separator } from "@/components/ui/separator"
-import { Loader2 } from "lucide-react"
-import { toast } from "@/components/ui/use-toast"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+import { useState } from "react";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { format, subDays } from "date-fns";
+import { Button } from "@/components/ui/button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import { HistoryTable } from "@/components/history-table";
+import { HistoryChart } from "@/components/history-chart";
+import { Separator } from "@/components/ui/separator";
+import { Loader2 } from "lucide-react";
+import { toast } from "@/components/ui/use-toast";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function HistoryPage() {
   // Utiliser des dates clonées pour éviter les problèmes de mutation
-  const defaultStartDate = new Date(2025, 3, 1) // 1er avril 2025
-  const defaultEndDate = new Date(2025, 3, 21) // 21 avril 2025
+  const defaultStartDate = new Date(2025, 3, 7);
+  const defaultEndDate = new Date(2025, 3, 13);
 
-  const [startDate, setStartDate] = useState<Date>(new Date(defaultStartDate))
-  const [endDate, setEndDate] = useState<Date>(new Date(defaultEndDate))
-  const [parameter, setParameter] = useState("temperature")
-  const [appliedStartDate, setAppliedStartDate] = useState<Date>(new Date(defaultStartDate))
-  const [appliedEndDate, setAppliedEndDate] = useState<Date>(new Date(defaultEndDate))
-  const [appliedParameter, setAppliedParameter] = useState("temperature")
-  const [isApplying, setIsApplying] = useState(false)
-  const [shouldFetch, setShouldFetch] = useState(false) // Nouvelle variable d'état
+  const [startDate, setStartDate] = useState<Date>(new Date(defaultStartDate));
+  const [endDate, setEndDate] = useState<Date>(new Date(defaultEndDate));
+  const [parameter, setParameter] = useState("temperature");
+  const [appliedStartDate, setAppliedStartDate] = useState<Date>(
+    new Date(defaultStartDate)
+  );
+  const [appliedEndDate, setAppliedEndDate] = useState<Date>(
+    new Date(defaultEndDate)
+  );
+  const [appliedParameter, setAppliedParameter] = useState("temperature");
+  const [isApplying, setIsApplying] = useState(false);
+  const [shouldFetch, setShouldFetch] = useState(false); // Nouvelle variable d'état
 
   // Préréglages de périodes
   const presets = [
     {
       name: "Dernière semaine",
       action: () => {
-        const end = new Date()
-        const start = subDays(end, 7)
-        setStartDate(new Date(start))
-        setEndDate(new Date(end))
+        const end = new Date();
+        const start = subDays(end, 7);
+        setStartDate(new Date(start));
+        setEndDate(new Date(end));
       },
     },
     {
       name: "Dernier mois",
       action: () => {
-        const end = new Date()
-        const start = new Date(end.getFullYear(), end.getMonth() - 1, end.getDate())
-        setStartDate(new Date(start))
-        setEndDate(new Date(end))
+        const end = new Date();
+        const start = new Date(
+          end.getFullYear(),
+          end.getMonth() - 1,
+          end.getDate()
+        );
+        setStartDate(new Date(start));
+        setEndDate(new Date(end));
       },
     },
     {
       name: "Avril 2025",
       action: () => {
-        setStartDate(new Date(2025, 3, 1))
-        setEndDate(new Date(2025, 3, 30))
+        setStartDate(new Date(2025, 3, 1));
+        setEndDate(new Date(2025, 3, 30));
       },
     },
     {
       name: "Mars 2025",
       action: () => {
-        setStartDate(new Date(2025, 2, 1))
-        setEndDate(new Date(2025, 2, 31))
+        setStartDate(new Date(2025, 2, 1));
+        setEndDate(new Date(2025, 2, 31));
       },
     },
-  ]
+  ];
 
   const handleStartDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
-      setStartDate(new Date(e.target.value))
+      setStartDate(new Date(e.target.value));
     }
-  }
+  };
 
   const handleEndDateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value) {
-      setEndDate(new Date(e.target.value))
+      setEndDate(new Date(e.target.value));
     }
-  }
+  };
 
   const handleApplyFilters = () => {
     if (!startDate || !endDate) {
@@ -84,8 +104,8 @@ export default function HistoryPage() {
         title: "Erreur",
         description: "Veuillez sélectionner une plage de dates complète",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
     if (startDate > endDate) {
@@ -93,29 +113,31 @@ export default function HistoryPage() {
         title: "Erreur",
         description: "La date de début doit être antérieure à la date de fin",
         variant: "destructive",
-      })
-      return
+      });
+      return;
     }
 
-    setIsApplying(true)
+    setIsApplying(true);
     // Utiliser des clones pour éviter les problèmes de mutation
-    setAppliedStartDate(new Date(startDate))
-    setAppliedEndDate(new Date(endDate))
-    setAppliedParameter(parameter)
-    setShouldFetch(true) // Activer la récupération des données
-  }
+    setAppliedStartDate(new Date(startDate));
+    setAppliedEndDate(new Date(endDate));
+    setAppliedParameter(parameter);
+    setShouldFetch(true); // Activer la récupération des données
+  };
 
   const handleFilterApplied = (success: boolean) => {
-    setIsApplying(false)
-    
-  }
+    setIsApplying(false);
+  };
 
   return (
     <div className="flex flex-col gap-4">
       <div>
-        <h1 className="text-2xl font-bold tracking-tight">Historique des Données</h1>
+        <h1 className="text-2xl font-bold tracking-tight">
+          Historique des Données
+        </h1>
         <p className="text-muted-foreground">
-          Consultez l'historique des données collectées par le système d'irrigation
+          Consultez l'historique des données collectées par le système
+          d'irrigation
         </p>
       </div>
 
@@ -123,7 +145,9 @@ export default function HistoryPage() {
         <Card className="md:col-span-2">
           <CardHeader>
             <CardTitle>Filtres</CardTitle>
-            <CardDescription>Sélectionnez une période et un paramètre</CardDescription>
+            <CardDescription>
+              Sélectionnez une période et un paramètre
+            </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-4">
@@ -151,7 +175,12 @@ export default function HistoryPage() {
 
               <div className="flex flex-wrap gap-2">
                 {presets.map((preset, index) => (
-                  <Button key={index} variant="outline" size="sm" onClick={preset.action}>
+                  <Button
+                    key={index}
+                    variant="outline"
+                    size="sm"
+                    onClick={preset.action}
+                  >
                     {preset.name}
                   </Button>
                 ))}
@@ -177,14 +206,20 @@ export default function HistoryPage() {
             <Separator />
 
             <div className="space-y-2">
-              <p className="text-sm font-medium">Informations sur les données</p>
+              <p className="text-sm font-medium">
+                Informations sur les données
+              </p>
               <div className="text-xs text-muted-foreground space-y-1">
                 <p>• Données disponibles du 1er janvier au 21 avril 2025</p>
                 <p>• Données brutes disponibles dans le tableau</p>
               </div>
             </div>
 
-            <Button className="w-full" onClick={handleApplyFilters} disabled={isApplying}>
+            <Button
+              className="w-full"
+              onClick={handleApplyFilters}
+              disabled={isApplying}
+            >
               {isApplying ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -201,14 +236,20 @@ export default function HistoryPage() {
           <CardHeader>
             <CardTitle>Visualisation des données</CardTitle>
             <CardDescription>
-              {appliedParameter === "temperature" && "Historique de la température"}
-              {appliedParameter === "soilHumidity" && "Historique de l'humidité du sol"}
-              {appliedParameter === "airHumidity" && "Historique de l'humidité de l'air"}
-              {appliedParameter === "pressure" && "Historique de la pression atmosphérique"}
-              {appliedParameter === "precipitation" && "Historique des précipitations"}
+              {appliedParameter === "temperature" &&
+                "Historique de la température"}
+              {appliedParameter === "soilHumidity" &&
+                "Historique de l'humidité du sol"}
+              {appliedParameter === "airHumidity" &&
+                "Historique de l'humidité de l'air"}
+              {appliedParameter === "pressure" &&
+                "Historique de la pression atmosphérique"}
+              {appliedParameter === "precipitation" &&
+                "Historique des précipitations"}
               {shouldFetch && (
                 <span className="block mt-1 text-xs">
-                  Période: {format(appliedStartDate, "dd/MM/yyyy")} - {format(appliedEndDate, "dd/MM/yyyy")}
+                  Période: {format(appliedStartDate, "dd/MM/yyyy")} -{" "}
+                  {format(appliedEndDate, "dd/MM/yyyy")}
                 </span>
               )}
             </CardDescription>
@@ -228,7 +269,9 @@ export default function HistoryPage() {
                 />
                 {!shouldFetch && (
                   <div className="flex justify-center items-center h-[350px] border rounded-md bg-muted/20">
-                    <p className="text-muted-foreground">Veuillez appliquer les filtres pour afficher les données</p>
+                    <p className="text-muted-foreground">
+                      Veuillez appliquer les filtres pour afficher les données
+                    </p>
                   </div>
                 )}
               </TabsContent>
@@ -244,5 +287,5 @@ export default function HistoryPage() {
         </Card>
       </div>
     </div>
-  )
+  );
 }

@@ -82,8 +82,8 @@ export default function Home() {
             <div className="flex items-center justify-center">
               <div className="relative w-full h-64 rounded-lg overflow-hidden">
                 <Image
-                  src="/images/irrigation_intelligente.jpeg"
-                  alt="Irrigation intelligente"
+                  src="/images/irrigation_iav.jpg"
+                  alt="Irrigation"
                   fill
                   style={{ objectFit: "cover" }}
                   className="rounded-lg"
@@ -223,6 +223,17 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
+                <div className="mt-4">
+                  <div className="relative w-[600px] h-96 left-[250px] rounded-lg overflow-hidden ">
+                    <Image
+                      src="/images/maquette.jpg"
+                      alt="Système de contrôle d'irrigation"
+                      fill
+                      style={{ objectFit: "cover" }}
+                      className="rounded-lg"
+                    />
+                  </div>
+                </div>
               </div>
 
               <Separator />
@@ -261,6 +272,17 @@ export default function Home() {
                     </p>
                   </div>
                 </div>
+                <div className="mt-4">
+                  <div className="relative w-[600px] h-96 left-[250px] rounded-lg overflow-hidden ">
+                    <Image
+                      src="/images/irrigation_intelligente.jpeg"
+                      alt="Interface de contrôle d'irrigation"
+                      fill
+                      style={{ objectFit: "cover" }}
+                      className="rounded-lg"
+                    />
+                  </div>
+                </div>
               </div>
 
               <Separator />
@@ -297,6 +319,17 @@ export default function Home() {
                       résultats d'analyse d'image pour une stratégie
                       d'irrigation personnalisée.
                     </p>
+                  </div>
+                </div>
+                <div className="mt-4">
+                  <div className="relative w-[600px] h-96 left-[250px] rounded-lg overflow-hidden ">
+                    <Image
+                      src="/images/drone_agriculture.jpg"
+                      alt="Drone"
+                      fill
+                      style={{ objectFit: "cover" }}
+                      className="rounded-lg"
+                    />
                   </div>
                 </div>
               </div>

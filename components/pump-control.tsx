@@ -40,6 +40,10 @@ interface PumpControlProps {
   readApiKey: string;
   writeApiKey: string;
 }
+interface RetryOptions {
+  retries?: number;
+  delay?: number;
+}
 
 export function PumpControl({ readApiKey, writeApiKey }: PumpControlProps) {
   const [channelData, setChannelData] = useState<ChannelData>({});
@@ -98,46 +102,73 @@ export function PumpControl({ readApiKey, writeApiKey }: PumpControlProps) {
   };
 
   // Mise à jour des données avec tous les champs
-  const updateThingSpeak = async (updates: Partial<ChannelData>) => {
-    try {
-      setUpdating(true);
-      setError(null);
+  const updateThingSpeak = async (
+    updates: Partial<ChannelData>,
+    options: RetryOptions = {}
+  ): Promise<boolean> => {
+    const { retries = 5, delay = 2000 } = options;
+    let attempts = 0;
 
-      // Récupérer les valeurs actuelles
-      const currentData = await fetchChannelData();
+    const attemptUpdate = async (): Promise<boolean> => {
+      try {
+        setUpdating(true);
+        setError(null);
 
-      // Préparer les paramètres avec toutes les valeurs
-      const params = new URLSearchParams({
-        api_key: writeApiKey,
-        ...currentData,
-        ...updates,
-        created_at: new Date().toISOString(),
-      });
+        const currentData = await fetchChannelData();
+        const params = new URLSearchParams({
+          api_key: writeApiKey,
+          ...currentData,
+          ...updates,
+          created_at: new Date().toISOString(),
+        });
 
-      // Envoyer la mise à jour
-      const response = await fetch(
-        `https://api.thingspeak.com/update?${params}`,
-        {
-          method: "POST",
+        const response = await fetch(
+          `https://api.thingspeak.com/update?${params}`,
+          { method: "POST" }
+        );
+
+        if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+
+        const result = await response.text();
+        if (Number(result) <= 0) throw new Error("Échec de la mise à jour");
+
+        // Vérification active de la mise à jour
+        const verifyUpdate = async (): Promise<boolean> => {
+          const newData = await fetchChannelData();
+          const field = Object.keys(updates)[0] as keyof ChannelData;
+          return newData[field] === updates[field];
+        };
+
+        // Attendre la synchronisation
+        let verified = false;
+        for (let i = 0; i < 3; i++) {
+          if (await verifyUpdate()) {
+            verified = true;
+            break;
+          }
+          await new Promise((resolve) => setTimeout(resolve, 2000));
         }
-      );
 
-      if (!response.ok) throw new Error(`Erreur HTTP: ${response.status}`);
+        if (!verified) throw new Error("La synchronisation a échoué");
 
-      const result = await response.text();
-      if (Number(result) <= 0) throw new Error("Échec de la mise à jour");
+        return true;
+      } catch (error) {
+        attempts++;
+        if (attempts < retries) {
+          await new Promise((resolve) => setTimeout(resolve, delay));
+          return attemptUpdate();
+        }
+        console.error("Échec final après réessais:", error);
+        setError(
+          "Échec de la mise à jour après plusieurs tentatives. Veuillez réessayer plus tard."
+        );
+        return false;
+      } finally {
+        setUpdating(false);
+      }
+    };
 
-      // Actualiser les données après un court délai
-      setTimeout(fetchChannelData, 2000);
-      return true;
-    } catch (error) {
-      console.error("Erreur lors de la mise à jour:", error);
-      setError("Échec de la mise à jour. Veuillez réessayer.");
-
-      return false;
-    } finally {
-      setUpdating(false);
-    }
+    return attemptUpdate();
   };
 
   // Gestion du changement de mode
@@ -147,33 +178,55 @@ export function PumpControl({ readApiKey, writeApiKey }: PumpControlProps) {
 
     if (Number(channelData.field7) !== newMode) {
       modeChangeInProgress.current = true;
-      const success = await updateThingSpeak({ field7: newMode.toString() });
+
+      // Désactiver temporairement l'interface
+      setUpdating(true);
+
+      const success = await updateThingSpeak(
+        { field7: newMode.toString() },
+        { retries: 20, delay: 2000 } // 5 tentatives avec 2s d'intervalle
+      );
 
       if (success) {
-        // Vérification périodique du changement
-        checkInterval.current = setInterval(fetchChannelData, 5000);
-        setTimeout(() => {
-          if (modeChangeInProgress.current && checkInterval.current) {
-            clearInterval(checkInterval.current);
-            modeChangeInProgress.current = false;
-            toast({
-              title: "Avertissement",
-              description: "Le changement de mode a pris trop de temps",
-              variant: "destructive",
-            });
-          }
-        }, 30000);
+        toast({
+          title: "Succès",
+          description: `Mode ${
+            value === "auto" ? "automatique" : "manuel"
+          } adopté`,
+        });
       } else {
-        modeChangeInProgress.current = false;
-        setActiveTab(newMode === 0 ? "auto" : "manual");
+        // Revenir à l'état précédent
+        setActiveTab(newMode === 0 ? "manual" : "auto");
       }
+
+      modeChangeInProgress.current = false;
+      setUpdating(false);
     }
   };
 
   // Gestion de l'état de la pompe
   const handlePumpToggle = async () => {
     const newState = channelData.field5 === "1" ? "0" : "1";
-    await updateThingSpeak({ field5: newState });
+    setUpdating(true);
+
+    const success = await updateThingSpeak(
+      { field5: newState },
+      { retries: 20, delay: 2000 }
+    );
+
+    if (success) {
+      toast({
+        title: "Succès",
+        description: `La pompe a été ${
+          newState === "1" ? "activée" : "désactivée"
+        } manuellement`,
+      });
+    } else {
+      // Annuler le changement visuel si échec
+      setChannelData((prev) => ({ ...prev, field5: prev.field5 }));
+    }
+
+    setUpdating(false);
   };
 
   // Initialisation et intervalle de rafraîchissement
@@ -249,11 +302,10 @@ export function PumpControl({ readApiKey, writeApiKey }: PumpControlProps) {
             <div className="flex items-start gap-3">
               <Info className="h-4 w-4 mt-0.5 flex-shrink-0" />
               <div>
-                <p className="font-medium">Note importante :</p>
+                <p className="font-medium">Information :</p>
                 <p className="mt-1">
-                  En cas d'erreur, cela peut être dû au délai de synchronisation
-                  de ThingSpeak. Veuillez patienter 10-15 secondes puis
-                  réessayer l'opération.
+                  Les changements peuvent prendre 3 à 15 secondes en raison du
+                  délai de synchronisation avec le serveur. Merci de patienter.
                 </p>
               </div>
             </div>
