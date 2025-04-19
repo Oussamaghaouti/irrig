@@ -19,6 +19,7 @@ import {
   SunIcon,
   DatabaseIcon,
   GlobeIcon,
+  WrenchIcon,
 } from "lucide-react";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -99,6 +100,7 @@ export default function Home() {
         <TabsList>
           <TabsTrigger value="objectives">Objectifs</TabsTrigger>
           <TabsTrigger value="phases">Phases du projet</TabsTrigger>
+          <TabsTrigger value="tools">Outils utilisés</TabsTrigger>
           <TabsTrigger value="outcomes">Retombées attendues</TabsTrigger>
         </TabsList>
 
@@ -331,6 +333,114 @@ export default function Home() {
                       className="rounded-lg"
                     />
                   </div>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </TabsContent>
+        <TabsContent value="tools">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <WrenchIcon className="h-5 w-5 text-orange-500" />
+                Outils et matériels utilisés
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 rounded-full bg-orange-100 p-1 dark:bg-orange-800">
+                    <ListChecks className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">ESP32 WiFi</p>
+                    <p className="text-xs text-muted-foreground">
+                      Microcontrôleur pour la gestion des données et la
+                      communication avec les composants
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 rounded-full bg-orange-100 p-1 dark:bg-orange-800">
+                    <ListChecks className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">
+                      Câbles divers, Mini électrovanne 12V, Pompe
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Alimentation de 5V, 2 Écrans LCD
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 rounded-full bg-orange-100 p-1 dark:bg-orange-800">
+                    <ListChecks className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Relais 5V DC</p>
+                    <p className="text-xs text-muted-foreground">
+                      Pour contrôler les électrovannes et la pompe
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 rounded-full bg-orange-100 p-1 dark:bg-orange-800">
+                    <ListChecks className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Capteur DHT22</p>
+                    <p className="text-xs text-muted-foreground">
+                      Pour mesurer la température et l'humidité de l'air
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 rounded-full bg-orange-100 p-1 dark:bg-orange-800">
+                    <ListChecks className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Capteur de pluie</p>
+                    <p className="text-xs text-muted-foreground">
+                      Pour ajuster l'irrigation en fonction de la pluie détectée
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 rounded-full bg-orange-100 p-1 dark:bg-orange-800">
+                    <ListChecks className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">
+                      Capteur d'humidité du sol
+                    </p>
+                    <p className="text-xs text-muted-foreground">
+                      Pour mesurer l'humidité et la température du sol
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="mt-0.5 rounded-full bg-orange-100 p-1 dark:bg-orange-800">
+                    <ListChecks className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">Capteur de pression</p>
+                    <p className="text-xs text-muted-foreground">
+                      Pour surveiller la pression de l'eau
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="mt-6">
+                <div className="relative w-[600px] h-[600px] left-[250px] rounded-lg overflow-hidden ">
+                  <Image
+                    src="/images/esp32.png"
+                    alt="Composants électroniques"
+                    fill
+                    style={{ objectFit: "cover" }}
+                    className="rounded-lg"
+                  />
                 </div>
               </div>
             </CardContent>
