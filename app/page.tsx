@@ -66,11 +66,25 @@ export default function Home() {
           <div className="grid gap-4 md:grid-cols-2">
             <div>
               <p className="text-sm text-muted-foreground leading-relaxed">
-                Face aux défis liés à la rareté des ressources en eau et à la
-                nécessité d'une gestion durable des espaces verts, il devient
-                impératif d'optimiser les pratiques d'irrigation. Le gazon, en
-                particulier, consomme une grande quantité d'eau et nécessite un
-                suivi rigoureux.
+                Dans la perspective de la Coupe du Monde 2030 que le Maroc
+                s’apprête à accueillir, d'importants investissements sont
+                attendus dans le développement d’infrastructures touristiques et
+                sportives, notamment la création de nouveaux espaces verts, de
+                terrains de football et de golf. Ces aménagements, bien
+                qu’indispensables à l’accueil de l’événement et à la
+                valorisation du territoire, soulèvent des enjeux majeurs en
+                matière de gestion durable de l’eau, ressource de plus en plus
+                rare dans le contexte actuel du changement climatique. Le gazon,
+                élément central de ces espaces, est particulièrement gourmand en
+                eau et requiert un suivi précis pour éviter tout gaspillage.
+                Dans ce contexte, nous proposons un système intelligent
+                d’irrigation automatique, basé sur les technologies de
+                l’Internet des Objets (IoT), l’énergie solaire, le web et
+                l’analyse d’images issues de drones et de satellites. Ce
+                dispositif vise à optimiser la consommation d’eau et à garantir
+                la durabilité des espaces verts, en s’inscrivant dans une
+                dynamique d’innovation technologique au service d’une gestion
+                responsable des ressources naturelles.
               </p>
               <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
                 Dans ce cadre, nous proposons un système intelligent
