@@ -20,7 +20,7 @@ export function SplashScreen() {
       setShow(false);
       // Marquer que l'écran de chargement a été affiché pour cette session
       sessionStorage.setItem("hasShownSplash", "true");
-    }, 10000);
+    }, 5000);
 
     return () => clearTimeout(timer);
   }, []);
@@ -29,15 +29,7 @@ export function SplashScreen() {
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white">
-      <div className="relative w-full h-full">
-        <Image
-          src="/images/loading-screen.jpg"
-          alt="Automatisation de l'Irrigation des Espaces Verts à l'IAV"
-          fill
-          style={{ objectFit: "contain", backgroundColor: "#f0f0f0" }}
-          priority
-        />
-      </div>
+      <div className="relative w-full h-full"></div>
       <div className="absolute bottom-10 flex flex-col items-center">
         <Loader2 className="h-10 w-10 animate-spin text-gray-500" />
         <p className="mt-2 text-gray-600 font-medium">Chargement...</p>
